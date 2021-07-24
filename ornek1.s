@@ -1,24 +1,17 @@
 ;*******************************************************************************
 ;@file				 Main.s
-;@project		     Microprocessor Systems Term Project
+;@project		     	 Sorted Linked List
 ;@date
 ;
-;@PROJECT GROUP
-;@groupno
-;@member1
-;@member2
-;@member3
-;@member4
-;@member5
 ;*******************************************************************************
 ;*******************************************************************************
 ;@section 		INPUT_DATASET
 ;*******************************************************************************
 
-;@brief 	This data will be used for insertion and deletion operation.
-;@note		The input dataset will be changed at the grading. 
-;			Therefore, you shouldn't use the constant number size for this dataset in your code. 
-				AREA     IN_DATA_AREA, DATA, READONLY
+
+;This data will be used for insertion and deletion operation.
+
+			AREA   	        IN_DATA_AREA, DATA, READONLY
 IN_DATA			DCD		0x10, 0x20, 0x15, 0x65, 0x25, 0x01, 0x01, 0x12, 0x65, 0x25, 0x85, 0x46, 0x10, 0x00
 END_IN_DATA
 
@@ -38,11 +31,11 @@ END_IN_DATA_FLAG
 ;*******************************************************************************
 
 ;@brief 	This part will be used for constant numbers definition.
-NUMBER_OF_AT	EQU		20									; Number of Allocation Table
-AT_SIZE			EQU		NUMBER_OF_AT*4						; Allocation Table Size   				;80 byte 640 bit 
+NUMBER_OF_AT		EQU		20									; Number of Allocation Table
+AT_SIZE			EQU		NUMBER_OF_AT*4								; Allocation Table Size   				;80 byte 640 bit 
 
 
-DATA_AREA_SIZE	EQU		AT_SIZE*32*2						; Allocable data area					
+DATA_AREA_SIZE	EQU		AT_SIZE*32*2									; Allocable data area					
 															; Each allocation table has 32 Cell
 															; Each Cell Has 2 word (Value + Address)
 															; Each word has 4 byte
@@ -58,31 +51,27 @@ LOG_ARRAY_SIZE	EQU     AT_SIZE*32*3						; Log Array Size
 															; 32 bit for data
 															; 32 bit for timestamp in us
 
-;//-------- <<< USER CODE BEGIN Constant Numbers Definitions >>> ----------------------															
 							
 
 
-;//-------- <<< USER CODE END Constant Numbers Definitions >>> ------------------------	
 
 ;*******************************************************************************
-;@brief 	This area will be used for global variables.
+;		GLOBAL VARIABLES
 				AREA     GLOBAL_VARIABLES, DATA, READWRITE		
 				ALIGN	
-TICK_COUNT		SPACE	 4									; Allocate #4 byte area to store tick count of the system tick timer.
+TICK_COUNT		SPACE	 4								; Allocate #4 byte area to store tick count of the system tick timer.
 FIRST_ELEMENT  	SPACE    4									; Allocate #4 byte area to store the first element pointer of the linked list.
 INDEX_INPUT_DS  SPACE    4									; Allocate #4 byte area to store the index of input dataset.
 INDEX_ERROR_LOG SPACE	 4									; Allocate #4 byte aret to store the index of the error log array.
 PROGRAM_STATUS  SPACE    4									; Allocate #4 byte to store program status.
-															; 0-> Program started, 1->Timer started, 2-> All data operation finished.
-;//-------- <<< USER CODE BEGIN Global Variables >>> ----------------------															
+												; 0-> Program started, 1->Timer started, 2-> All data operation finished.
 							
 ALLOCATED_AREA  SPACE	 4 									; Allocated area counter
 
-;//-------- <<< USER CODE END Global Variables >>> ------------------------															
 
 ;*******************************************************************************
 
-;@brief 	This area will be used for the allocation table
+;@brief 	ALLOCATION TABLE
 				AREA     ALLOCATION_TABLE, DATA, READWRITE		
 				ALIGN	
 __AT_Start
@@ -111,11 +100,9 @@ __LOG_Start
 LOG_MEM       	SPACE    LOG_ARRAY_SIZE						; Allocate #DATA_AREA_SIZE byte area from memory.
 __LOG_END
 
-;//-------- <<< USER CODE BEGIN Data Allocation >>> ----------------------															
 							
 
 
-;//-------- <<< USER CODE END Data Allocation >>> ------------------------															
 
 ;*******************************************************************************
 ;@endsection 	DATA_DECLARATION
@@ -157,7 +144,6 @@ STOP			B	STOP						; Infinite loop.
 ;@brief 	This function will be used for System Tick Handler
 SysTick_Handler	FUNCTION	
 				EXPORT SysTick_Handler
-;//-------- <<< USER CODE BEGIN System Tick Handler >>> ----------------------															
 				PUSH{LR} ;
 				
 				
@@ -273,7 +259,6 @@ program_finish	BL SysTick_Stop
 
 
 iter_finish 	POP{PC}				
-;//-------- <<< USER CODE END System Tick Handler >>> ------------------------				
 				ENDFUNC
 			
 				
@@ -281,7 +266,6 @@ iter_finish 	POP{PC}
 
 ;@brief 	This function will be used to initiate System Tick Handler
 SysTick_Init	FUNCTION			
-;//-------- <<< USER CODE BEGIN System Tick Timer Initialize >>> ----------------------															
 
 				LDR R1, =0xE000E010 			; Load Control and Status Register Adress to R1.
 				LDR R0, =318   					; Load Reload Value to R0
@@ -296,14 +280,12 @@ SysTick_Init	FUNCTION
 				
 				BX LR
 
-;//-------- <<< USER CODE END System Tick Timer Initialize >>> ------------------------				
 				ENDFUNC
 
 ;*******************************************************************************				
 
 ;@brief 	This function will be used to stop the System Tick Timer
 SysTick_Stop	FUNCTION			
-;//-------- <<< USER CODE BEGIN System Tick Timer Stop >>> ----------------------	
 				
 				LDR R1, =0xE000E010 			; Load Control and Status Register Adress to R1.
 				MOVS R0, #0						
@@ -314,7 +296,6 @@ SysTick_Stop	FUNCTION
 				LDR R0, =PROGRAM_STATUS			;Return PROGRAM_STATUS from R0
 				B LOOP
 				
-;//-------- <<< USER CODE END System Tick Timer Stop >>> ------------------------				
 				ENDFUNC
 
 ;*******************************************************************************				
@@ -322,7 +303,6 @@ SysTick_Stop	FUNCTION
 ;@brief 	This function will be used to clear allocation table
 Clear_Alloc		FUNCTION	
 				
-;//-------- <<< USER CODE BEGIN Clear Allocation Table Function >>> ----------------------															
 	
 				MOVS R2,#0 						; Index of Allocation Table					
 loop			MOVS R0,#0						; Set R0 to 0
@@ -336,14 +316,12 @@ loop			MOVS R0,#0						; Set R0 to 0
 return_main2	BX LR							; Return Clear_Alloc
 
 
-;//-------- <<< USER CODE END Clear Allocation Table Function >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************		
 
 ;@brief 	This function will be used to clear error log array
 Clear_ErrorLogs	FUNCTION			
-;//-------- <<< USER CODE BEGIN Clear Error Logs Function >>> ----------------------															
 
 
 				MOVS R2,#0 						; Index of Error Logs												
@@ -358,14 +336,12 @@ loop2			MOVS R0,#0						; Set R0 to 0
 return_main		BX LR							; Return Clear_ErrorLogs
 				
 				
-;//-------- <<< USER CODE END Clear Error Logs Function >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************
 
 ;@brief 	This function will be used to initialize global variables
 Init_GlobVars	FUNCTION			
-;//-------- <<< USER CODE BEGIN Initialize Global Variables >>> ----------------------															
 				
 				LDR R1, =TICK_COUNT				;
 				MOVS R2, #0						;
@@ -390,7 +366,6 @@ Init_GlobVars	FUNCTION
 				BX LR
 				
 				
-;//-------- <<< USER CODE END Initialize Global Variables >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************	
@@ -399,7 +374,6 @@ Init_GlobVars	FUNCTION
 ;			from the memory using the allocation table.				
 ;@return     R0 <- The allocated area address
 Malloc            FUNCTION
-;//-------- <<< USER CODE BEGIN System Tick Handler >>> ----------------------
 
 				MOVS R7,#0						; Bitwise index of allocation table
                 MOVS R3, #1 					; 00000001 is loaded to compare by bits
@@ -436,7 +410,6 @@ Malloc_return
 				
 				BX LR							; return
 						
-;//-------- <<< USER CODE END System Tick Handler >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************				
@@ -444,7 +417,6 @@ Malloc_return
 ;@brief 	This function will be used for deallocate the existing area
 ;@param		R0 <- Address to deallocate
 Free			FUNCTION			
-;//-------- <<< USER CODE BEGIN Free Function >>> ----------------------
 				
 				LDR R7,=DATA_MEM			;Load the start address of DATA_MEM to R7
 				SUBS R0,R0,R7				;Address to allocate - start address of array = Iteration
@@ -475,7 +447,6 @@ second_loop		MOVS R5,#1					; R5 <- 00000001
 
 				BX LR			
 				
-;//-------- <<< USER CODE END Free Function >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************				
@@ -484,7 +455,6 @@ second_loop		MOVS R5,#1					; R5 <- 00000001
 ;@param		R0 <- The data to insert
 ;@return    R0 <- Error Code
 Insert			FUNCTION			
-;//-------- <<< USER CODE BEGIN Insert Function >>> ----------------------															
 				MOVS R1,R0					; Save the new value in R0
 				LDR R7,=ALLOCATED_AREA		; Load allocated area address to R7
 				LDR R6,[R7]					; Load allocated area value to r6
@@ -587,16 +557,14 @@ duplicate_error	MOVS R0,#2					; Error code : 2 (Duplicate data)
 
 
 
-;//-------- <<< USER CODE END Insert Function >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************				
 
 ;@brief 	This function will be used to remove data from the linked list
 ;@param		R0 <- the data to delete
-;@return    R0 <- Error Code
+;@return        R0 <- Error Code
 Remove			FUNCTION			
-;//-------- <<< USER CODE BEGIN Remove Function >>> ----------------------															
 
 				MOVS R2,R0					; Save the value to R2
 				LDR R1,=ALLOCATED_AREA		; Load ALLOCATED_AREA address to R1
@@ -682,7 +650,6 @@ error_empty		MOVS R0,#3					; Error code : 3 (Linked List is empty)
 				BX LR						; Return
 				
 
-;//-------- <<< USER CODE END Remove Function >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************				
@@ -690,10 +657,9 @@ error_empty		MOVS R0,#3					; Error code : 3 (Linked List is empty)
 ;@brief 	This function will be used to clear the array and copy the linked list to the array
 ;@return	R0 <- Error Code
 LinkedList2Arr	FUNCTION			
-;//-------- <<< USER CODE BEGIN Linked List To Array >>> ----------------------															
 
 
-				MOVS R2,#0              	; Index of ARRAY_MEM
+		MOVS R2,#0              	; Index of ARRAY_MEM
                 LDR R1,=ARRAY_MEM			; Load R1 with ARRAY_MEM address
 
 lltar_loop      MOVS R0,#0                  ; Clear ARRAY_MEM
@@ -729,7 +695,6 @@ lltar_return
                 BX LR						; Return
 
 
-;//-------- <<< USER CODE END Linked List To Array >>> ------------------------				
 				ENDFUNC
 				
 ;*******************************************************************************				
@@ -740,9 +705,8 @@ lltar_return
 ;@param     R2 -> Operation (Insertion / Deletion / LinkedList2Array)
 ;@param     R3 -> Data
 WriteErrorLog	FUNCTION			
-;//-------- <<< USER CODE BEGIN Write Error Log >>> ----------------------															
 				
-				LDR R6,=LOG_MEM                ; R6 <- LOG_MEM
+		LDR R6,=LOG_MEM                ; R6 <- LOG_MEM
                 LDR R4,=INDEX_ERROR_LOG        ; Load R4 with INDEX_ERROR_LOG value
 				LDR R4,[R4]
                 LDR R5,=LOG_ARRAY_SIZE         ; Load R5 with LOG_ARRAY_SIZE value
@@ -756,12 +720,12 @@ WriteErrorLog	FUNCTION
 
                 STR R0,[R6,R4]                 ; Write Index, ErrorCode and Operation to Error Log 
 
-				LDR R4,=INDEX_ERROR_LOG		   ; Load R4 with INDEX_ERROR_LOG address
+		LDR R4,=INDEX_ERROR_LOG		   ; Load R4 with INDEX_ERROR_LOG address
                 LDR R5,[R4]                    ; Write the value to R5 at INDEX_ERROR_LOG
                 ADDS R5,R5,#4                  ; Index += 4
                 STR R5,[R4]                    ; Update INDEX_ERROR_LOG
 
-				LDR R4,[R4]					   ; R4 <- INDEX_ERROR_LOG value
+		LDR R4,[R4]					   ; R4 <- INDEX_ERROR_LOG value
                 STR R3,[R6,R4]                 ; Write Data to Error Log 
 
                 LDR R4,=INDEX_ERROR_LOG		   ; Load R4 with INDEX_ERROR_LOG address
@@ -769,13 +733,13 @@ WriteErrorLog	FUNCTION
                 ADDS R5,R5,#4                  ; Index += 4
                 STR R5,[R4]                    ; Update INDEX_ERROR_LOG
 
-				PUSH{LR}
+		PUSH{LR}
                 BL GetNow                      ; Call GetNow function
-                LDR R4,[R4]					   ; R4 <- INDEX_ERROR_LOG value			
-				STR R0,[R6,R4]                 ; Write current time to Error Log 
+                LDR R4,[R4]		       ; R4 <- INDEX_ERROR_LOG value			
+		STR R0,[R6,R4]                 ; Write current time to Error Log 
 
                 
-				LDR R4,=INDEX_ERROR_LOG		   ; Load R4 with INDEX_ERROR_LOG address
+		LDR R4,=INDEX_ERROR_LOG	       ; Load R4 with INDEX_ERROR_LOG address
                 LDR R5,[R4]                    ; Write the value to R5 at INDEX_ERROR_LOG
                 ADDS R5,R5,#4                  ; Log Area Size += 4
                 STR R5,[R4]                    ; Update INDEX_ERROR_LOG
@@ -785,14 +749,13 @@ wrerrlog_return
 
 
 
-;//-------- <<< USER CODE END Write Error Log >>> ------------------------				
 				ENDFUNC
 				
 ;@brief 	This function will be used to get working time of the System Tick timer
 ;@return	R0 <- Working time of the System Tick Timer (in us).			
 GetNow			FUNCTION			
-;//-------- <<< USER CODE BEGIN Get Now >>> ----------------------															
-				LDR R1, =0xE000E018          ; Load Current Value Adress to R1
+
+		LDR R1, =0xE000E018          ; Load Current Value Adress to R1
                 LDR R1,[R1]                  ;
                 LDR R2, =TICK_COUNT
                 LDR R2,[R2]                  ; Load Tick Count to R2
@@ -803,15 +766,11 @@ GetNow			FUNCTION
                 ADDS R2,R2,R3                ; R2 <- Total Time passed in microseconds
                 MOVS R0,R2                   ; Return from R0
                 BX LR                        ; Return
-;//-------- <<< USER CODE END Get Now >>> ------------------------
 				ENDFUNC
 				
 ;*******************************************************************************	
 
-;//-------- <<< USER CODE BEGIN Functions >>> ----------------------															
 
-
-;//-------- <<< USER CODE END Functions >>> ------------------------
 
 ;*******************************************************************************
 ;@endsection 		USER_FUNCTIONS
