@@ -114,7 +114,6 @@ __LOG_END
 
 			
 ;@brief 	This area contains project codes. 
-;@note		You shouldn't change the main function. 				
 				AREA MAINFUNCTION, CODE, READONLY
 				ENTRY
 				THUMB
